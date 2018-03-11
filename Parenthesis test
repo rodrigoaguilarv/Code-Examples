@@ -1,0 +1,25 @@
+###+ Rodrigo Aguilar V. +###
+
+######## Example 1 #########
+
+# Test if the parenthesis are closed propertly.
+
+def balanced_parent(parenstrin):
+
+	
+	opens = ["(", "[", "{", "<"]  
+	closes = [")", "]", "}", ">"]
+	mapping = dict(zip(opens, closes))
+	stack = [] 
+
+	for letter in parenstrin:
+		if letter in opens:
+			stack.append(mapping[letter]) 
+		elif letter in closes: 
+			if not stack: 
+				return False 
+			elif stack[-1] == letter:
+				stack.pop() 
+			else: 
+				return False
+	return not stack
