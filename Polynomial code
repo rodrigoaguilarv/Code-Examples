@@ -1,0 +1,107 @@
+###+ Rodrigo Aguilar V. +###
+
+######## Example  #########
+class Polynomial:
+    def __init__(self, *args, **kwargs):
+        self.coeficients = []
+
+        if args:
+            if len(args) == 1:
+                self.coeficients = args[0]
+            else:
+                self.coeficients = list(args)
+        elif kwargs:
+            kwargs = {int(k[1:]): v for k, v in kwargs.items()}
+            highest = int(max(kwargs.keys()))
+            for i in range(highest+1):
+                self.coeficients.append(kwargs.get(i, 0))
+        
+        if self.coeficients:
+            while True:
+                if not self.coeficients or self.coeficients[-1] != 0:
+                    break
+                self.coeficients.pop()
+    def __str__(self):
+       joiner = {(True, True): '-',
+                 (True, False): '',
+                 (False, True): ' - ',
+                 (False, False): ' + '
+               }
+
+       parts = []
+       for exp, coef in reversed(list(enumerate(self.coeficients))):
+           if coef == 0:
+               continue
+
+           join_str = joiner[not parts, coef < 0]
+           coef = abs(coef)
+        
+           if coef == 1 and exp != 0:
+               coef = ''
+
+           f = {0: '{}{}', 1: '{}{}x'}.get(exp, '{}{}x^{}')
+
+           parts.append(f.format(join_str, coef, exp))
+
+       return ''.join(parts) or '0'
+           def __eq__(self, other):
+        return self.coeficients == other.coeficients
+
+    def __add__(self, other):
+        res = []
+
+       
+        for a, b in zip(self.coeficients, other.coeficients):   
+            res.append(a + b)
+
+       
+        if len(self.coeficients) > len(other.coeficients):
+            res += self.coeficients[len(res):]
+        elif len(other.coeficients) > len(self.coeficients):
+            res += other.coeficients[len(res):]
+
+        return Polynomial(res)
+
+    def __pow__(self, n):
+       
+        if n == 0:
+            return Polynomial(1)
+        # p^1 = p
+        if n == 1:
+            return Polynomial(self.coeficients)
+
+        pol_tmp = self.coeficients
+        res = []
+
+        for i in range(n-1): 
+            res = [0] * (len(pol_tmp) + len(self.coeficients) - 1) 
+
+            for a in range(len(pol_tmp)):
+                for b in range(len(self.coeficients)):
+                    res[a + b] += (pol_tmp[a] * self.coeficients[b])
+
+            pol_tmp = res
+
+        return Polynomial(res)
+
+
+    def derivative(self):
+
+        der = []
+
+        for n in range(1, len(self.coeficients)):
+            res = self.coeficients[n] * n
+            der.append(res)
+        return Polynomial(der)
+
+
+    def at_value(self, x):
+        if not self.coeficients:
+            return 0
+
+
+        res = self.coeficients[0]                           
+
+        for n in range(1, len(self.coeficients)):
+            res += (self.coeficients[n] * (x ** n))
+        return res
